@@ -5,12 +5,15 @@ import MainImage from '../LandingPage/Sections/MainImage';
 import MovieInfo from './Sections/MovieInfo';
 import {Row} from 'antd';
 import GridCards from '../commons/GridCards';
+import Favoite from './Sections/Favoite';
+
 
 
 function MovieDetail(props) {
 
   const [Movie, setMovie] = useState([]);
   const [Casts, setCasts] = useState([]);
+  const [ActorToggle, setActorToggle] = useState(false);
 
   let movieId =props.match.params.movieId
   useEffect(() => {
@@ -33,6 +36,10 @@ function MovieDetail(props) {
     });
     
   }, [])
+
+  const onActorToggle=()=>{
+    setActorToggle(!ActorToggle)
+  }
   return (
     <div>
   <MainImage image={`${IMAGE_BASE_URL}w1280${Movie.backdrop_path}`}
@@ -40,32 +47,41 @@ function MovieDetail(props) {
                 text={Movie.overview}
             />
             
-
+    
 
     <div style={{width:'85%', margin:'1rem auto'}}>
+      
+    <div style={{display:'flex' ,justifyContent:'flex-end'}}>
+      <Favoite movieInfo={Movie} userfrom={localStorage.getItem('userId')}
+              movieId={movieId}/>
+    </div>
+
       <MovieInfo 
         movie={Movie}
       />
     <br />
     <div style={{display:'flex',justifyItems:'center',margin:'2rem'}}>
-        <button>Toggle Actor View</button>
+        <button onClick={onActorToggle}>Toggle Actor View</button>
       </div>
 
-      <Row gutter={[16, 16]} >
+    {ActorToggle &&
+        <Row gutter={[16, 16]} >
 
-                    {Casts && Casts.map((cast, index) => (
-                        <React.Fragment key={index}>
-                            <GridCards
-                                
-                                image={cast.profile_path ?
-                                    `${IMAGE_BASE_URL}w500${cast.profile_path}` : null}
-                                
-                                charactorName={cast.name}
-                            />
-                        </React.Fragment>
-                    ))}
+        {Casts && Casts.map((cast, index) => (
+            <React.Fragment key={index}>
+                <GridCards
+                    
+                    image={cast.profile_path ?
+                        `${IMAGE_BASE_URL}w500${cast.profile_path}` : null}
+                    
+                    charactorName={cast.name}
+                />
+            </React.Fragment>
+        ))}
 
-                </Row>     
+    </Row>    
+    }
+       
     </div>
     </div>
   )
